@@ -20,6 +20,7 @@ header {
     padding: 10px 18px;
     font-size: 16px;
     border-radius: 5px;
+    font-weight: bold;
     transition: background-color 0.3s, transform 0.2s, border 0.3s;
     border: 2px solid transparent; /* Viền mặc định không màu */
     background-color: rgba(15, 154, 201, 0.2); /* Màu nền nhẹ cho các ô không active */
@@ -42,5 +43,7 @@ header {
 }
 
 .login-navlink {
-    background-color: #16A085 !important;
+    background-color: #e4df51 !important;
+    font-style: italic;
+    color: black !important;
 }

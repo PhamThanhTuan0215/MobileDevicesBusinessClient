@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { FaShoppingCart, FaUserCircle  } from 'react-icons/fa';
+import { FaShoppingCart, FaUserCircle, FaHeart  } from 'react-icons/fa';
 
 export const Navbar = () => {
 
@@ -13,6 +13,10 @@ export const Navbar = () => {
             <NavLink to='/shop' >Shop</NavLink>
 
             <NavLink to='/my-orders' >My Orders</NavLink>
+
+            <NavLink to='/wishlist' style={{ color: 'red' }}>
+                <FaHeart />
+            </NavLink>
 
             <NavLink to='/cart' className='cart-navlink'>
                 <FaShoppingCart />
