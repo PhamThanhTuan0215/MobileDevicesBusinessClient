@@ -8,7 +8,8 @@ header {
 
 .primary-nav {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: center;
     gap: 20px;
     width: 100%;
 
@@ -22,24 +23,20 @@ header {
     border-radius: 5px;
     font-weight: bold;
     transition: background-color 0.3s, transform 0.2s, border 0.3s;
-    border: 2px solid transparent; /* Viền mặc định không màu */
-    background-color: rgba(15, 154, 201, 0.2); /* Màu nền nhẹ cho các ô không active */
+    border: 2px solid transparent;
+    background-color: rgba(15, 154, 201, 0.2);
 }
 
 .primary-nav a:hover {
     background-color: #16A085;
     transform: scale(1.05);
-    border: 2px solid #1daecf; /* Viền khi hover */
+    border: 2px solid #1daecf;
 }
 
 .primary-nav a.active {
     background-color: #1daecf;
     color: white;
-    border: 2px solid #1daecf; /* Viền khi ô đang active */
-}
-
-.cart-navlink {
-    margin-right: auto; 
+    border: 2px solid #1daecf;
 }
 
 .login-navlink {

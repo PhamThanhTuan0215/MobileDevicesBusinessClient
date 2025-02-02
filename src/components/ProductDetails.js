@@ -1,12 +1,20 @@
-// src/components/ProductDetailModal.js
 import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import '../assets/css/ProductDetails.css'
+import AlertMessage from "../utils/AlertMessage"
 import api from "../services/api";
+import { getErrorMessage } from '../utils/ErrorHandler';
 
 const ProductDetailModal = ({ visible, productId, onClose }) => {
     const [productDetails, setProductDetails] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const [alert, setAlert] = useState(null);
+
+    const showAlert = (message, type = "success") => {
+        setAlert({ message, type });
+        setTimeout(() => setAlert(null), 3000);
+    };
 
     useEffect(() => {
         if (productId) {
@@ -17,19 +25,13 @@ const ProductDetailModal = ({ visible, productId, onClose }) => {
                     setLoading(false);
                 })
                 .catch(error => {
-                    console.error(error);
                     setLoading(false);
+
+                    const { message, statusMessage } = getErrorMessage(error.response);
+                    showAlert(message, statusMessage);
                 });
         }
     }, [productId, visible]);
-
-    const handleAddToWishlist = (productId) => {
-        console.log("Added to wishlist:", productId);
-    };
-
-    const handleAddToCart = (productId) => {
-        console.log("Added to cart:", productId);
-    };
 
     return (
         <Dialog
@@ -48,20 +50,9 @@ const ProductDetailModal = ({ visible, productId, onClose }) => {
                         <div className="product-basic-info">
                             <h2 className="product-name">{productDetails.name}</h2>
                             <img src={productDetails.url_image} alt={productDetails.name} />
-                            <p className="product-brand">Brand: {productDetails.brand}</p>
+                            <p className="product-brand">{productDetails.brand}</p>
                             <p className="product-price">{productDetails.retail_price.toLocaleString()} VND</p>
-                            <button className="add-to-wishlist-button" onClick={(e) => {
-                                e.stopPropagation()
-                                handleAddToWishlist(productDetails._id)
-                            }}>
-                                Add to Wishlist
-                            </button>
-                            <button className="add-to-cart-button" onClick={(e) => {
-                                e.stopPropagation()
-                                handleAddToCart(productDetails._id)
-                            }}>
-                                Add to Cart
-                            </button>
+
                         </div>
 
                         <div className="product-details-info">
@@ -95,6 +86,8 @@ const ProductDetailModal = ({ visible, productId, onClose }) => {
             ) : (
                 <p>Product not found</p>
             )}
+
+            {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
         </Dialog>
     );
 };

@@ -57,7 +57,7 @@
 
 .product-details-info h3 {
     font-size: 1.5rem;
-    color: #16a085;
+    color: #66a8e2;
     margin-bottom: 15px;
 }
 
@@ -98,22 +98,6 @@
 
 .product-details button:hover {
     background-color: #16a085;
-}
-
-.add-to-cart-button {
-    background-color: #1daecf;
-}
-
-.add-to-cart-button:hover {
-    background-color: #148f99;
-}
-
-.add-to-wishlist-button {
-    background-color: #e98f8f;
-}
-
-.add-to-wishlist-button:hover {
-    background-color: #e94848;
 }
 
 @media (max-width: 768px) {

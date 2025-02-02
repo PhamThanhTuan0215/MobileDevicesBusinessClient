@@ -1,7 +1,7 @@
 .alert-message {
     position: fixed;
     top: 10px;
-    right: 20px;
+    right: 10px;
     padding: 12px 20px;
     border-radius: 8px;
     font-size: 16px;
@@ -19,6 +19,9 @@
 }
 .alert-message.warning {
     background-color: #ffc107;
+}
+.alert-message.info {
+    background-color: #17a2b8;
 }
 
 @keyframes fadeInOut {
