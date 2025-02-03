@@ -105,8 +105,8 @@ export const Wishlist = () => {
         api.post(`carts/add/${customerId}/${productId}`, {}, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(() => {
-                showAlert("Added to cart", "success");
+            .then(response => {
+                showAlert(response.data.message, "success");
             })
             .catch(error => {
                 const { message, statusMessage } = getErrorMessage(error.response);

@@ -5,6 +5,7 @@ import { FaSearch } from "react-icons/fa";
 import ProductDetails from "../components/ProductDetails";
 import AlertMessage from "../utils/AlertMessage"
 import { getErrorMessage } from "../utils/ErrorHandler";
+import { useLocation } from 'react-router-dom';
 
 // Component tìm kiếm
 const SearchBox = ({ searchTerm, setSearchTerm }) => (
@@ -69,6 +70,11 @@ const ProductCard = ({ product, wishlist, onAddToCart, onWishlistToggle, onClick
 );
 
 export const Shop = () => {
+
+    const location = useLocation();
+    const alertMessage = location.state?.alertMessage;
+    const alertMessageStatus = location.state?.statusMessage;
+
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [brands, setBrands] = useState([]);
@@ -90,6 +96,10 @@ export const Shop = () => {
     };
 
     useEffect(() => {
+
+        if(alertMessage) {
+            showAlert(alertMessage, alertMessageStatus)
+        }
 
         const customerId = localStorage.getItem("customerId");
         const token = localStorage.getItem("token");
@@ -128,7 +138,7 @@ export const Shop = () => {
                 showAlert(message, statusMessage);
             });
 
-    }, []);
+    }, [alertMessage, alertMessageStatus]);
 
     useEffect(() => {
         let filtered = [...products];
@@ -155,21 +165,21 @@ export const Shop = () => {
 
         const customerId = localStorage.getItem("customerId");
         const token = localStorage.getItem("token");
-    
+
         if (!customerId || !token) {
             showAlert("You need to log in", "warning");
             return;
         }
-    
+
         const isInWishlist = wishlist.includes(productId);
-    
+
         if (isInWishlist) {
             // Xóa sản phẩm khỏi wishlist
             api.delete(`wishlists/remove/${customerId}/${productId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-                .then(() => {
-                    showAlert("Removed from wishlist", "success");
+                .then(response => {
+                    showAlert(response.data.message, "success");
                     setWishlist(wishlist.filter(id => id !== productId));
                 })
                 .catch(error => {
@@ -181,8 +191,8 @@ export const Shop = () => {
             api.post(`wishlists/add/${customerId}/${productId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-                .then(() => {
-                    showAlert("Added to wishlist", "success");
+                .then(response => {
+                    showAlert(response.data.message, "success");
                     setWishlist([...wishlist, productId]);
                 })
                 .catch(error => {
@@ -195,7 +205,7 @@ export const Shop = () => {
     const handleAddToCart = (productId) => {
         const customerId = localStorage.getItem("customerId");
         const token = localStorage.getItem("token");
-    
+
         if (!customerId || !token) {
             showAlert("You need to log in", "warning");
             return;
@@ -204,8 +214,8 @@ export const Shop = () => {
         api.post(`carts/add/${customerId}/${productId}`, {}, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(() => {
-                showAlert("Added to cart", "success");
+            .then(response => {
+                showAlert(response.data.message, "success");
             })
             .catch(error => {
                 const { message, statusMessage } = getErrorMessage(error.response);
@@ -226,6 +236,7 @@ export const Shop = () => {
 
     return (
         <>
+
             <div className="shop-container">
                 <div className="filter-container">
                     <SearchBox searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

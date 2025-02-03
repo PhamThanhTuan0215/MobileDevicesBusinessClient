@@ -1,0 +1,49 @@
+.cart-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cart-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.cart-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.quantity-value {
+    font-weight: bold;
+    color: #ff4800;
+}
+
+.price-value {
+    font-weight: bold;
+    color: #28a745;
+}
+
+.price-discount-value {
+    font-weight: bold;
+    color: #1219d6;
+}
+
+.price-payment-value {
+    font-weight: bold;
+    font-style: italic;
+    font-size: 25px;
+    color: #28a745;
+}
+
+#method {
+    margin-left: 20px;
+}

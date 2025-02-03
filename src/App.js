@@ -1,7 +1,7 @@
 import 'primereact/resources/themes/lara-light-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 
-import { Route, Routes} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Home } from "./pages/Home";
 import { Shop } from "./pages/Shop";
@@ -13,6 +13,7 @@ import { ManageOrders } from "./pages/ManageOrders";
 import { Login } from "./pages/Login";
 import { LoginAdmin } from "./pages/LoginAdmin";
 import { Profile } from "./pages/Profile";
+import { TestPage } from "./pages/TestPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./utils/ProtectedRoute";
@@ -97,6 +98,11 @@ function App() {
         <Route
           path="/profile"
           element={<ProtectedRoute element={<Profile />} isLoggedIn={isLoggedIn} />}
+        />
+
+        <Route
+          path="/test"
+          element={<ProtectedRoute element={<TestPage />} isLoggedIn={isLoggedIn} />}
         />
 
       </Routes>
