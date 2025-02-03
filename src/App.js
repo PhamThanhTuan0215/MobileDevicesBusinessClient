@@ -11,6 +11,7 @@ import { Cart } from "./pages/Cart";
 import { ManageProducts } from "./pages/ManageProducts";
 import { ManageOrders } from "./pages/ManageOrders";
 import { Login } from "./pages/Login";
+import { LoginAdmin } from "./pages/LoginAdmin";
 import { Profile } from "./pages/Profile";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -85,6 +86,11 @@ function App() {
         <Route
           path="/login"
           element={<ProtectedRoute element={<Login />} allowGuest={true} isLoggedIn={isLoggedIn} requiredNotLogged={true} />}
+        />
+
+        <Route
+          path="/loginAdmin"
+          element={<ProtectedRoute element={<LoginAdmin />} allowGuest={true} isLoggedIn={isLoggedIn} requiredNotLogged={true} />}
         />
 
         {/*Yêu cầu phải đăng nhập*/}
