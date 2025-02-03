@@ -1,7 +1,8 @@
 import 'primereact/resources/themes/lara-light-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes} from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Home } from "./pages/Home";
 import { Shop } from "./pages/Shop";
 import { MyOrder } from "./pages/MyOrder";
@@ -17,18 +18,24 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 
 function App() {
 
-  localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lciI6eyJpZCI6IjY3N2QzYmJkNWVhNmFlODgxYjgxNmZiMSJ9LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3Mzg1Mjg5NDgsImV4cCI6MTczODUzMjU0OH0.F51G1nkUvon7fxVznoRr5lwqkuyk67VDyzlrxwbzCbU");
-  localStorage.setItem("customerId", "677d3bbd5ea6ae881b816fb1");
-  localStorage.setItem("isLoggedIn", true)
-  localStorage.setItem("role", "manager")
 
-  // localStorage.removeItem("token")
-  // localStorage.removeItem("customerId")
-  // localStorage.removeItem("isLoggedIn")
-  // localStorage.removeItem("role")
+  // State quản lý đăng nhập
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
+  const [role, setRole] = useState(localStorage.getItem("role") || "guest");
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true" || false;
-  const role = localStorage.getItem("role") || "guest";
+  // Theo dõi thay đổi trong localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+      setRole(localStorage.getItem("role") || "guest");
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   return (
     <>
