@@ -14,7 +14,7 @@ export const getErrorMessage = (errorResponse) => {
             statusMessage = "warning";
         } else {
             if (data.code === 1) {
-                statusMessage = "info";
+                statusMessage = "warning";
             } else if (data.code === 2) {
                 statusMessage = "error";
             } else {
