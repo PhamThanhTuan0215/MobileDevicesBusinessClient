@@ -88,6 +88,11 @@ export const Profile = () => {
             showAlert(message, statusMessage);
         }
     };
+
+    const handleLogout = () => {
+        localStorage.clear();
+        window.location.href = "/";
+    };
     
     return (
         <>
@@ -111,6 +116,9 @@ export const Profile = () => {
                 </div>
                 <button className="change-password-btn" onClick={() => setShowPasswordPopup(true)}>
                     Change Password
+                </button>
+                <button className="logout-btn" onClick={handleLogout}>
+                    Logout
                 </button>
                 {showAvatarPopup && (
                     <div className="avatar-popup">

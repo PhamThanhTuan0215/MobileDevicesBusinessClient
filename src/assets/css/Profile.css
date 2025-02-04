@@ -76,7 +76,7 @@
 .change-password-btn {
     width: 100%;
     padding: 10px;
-    background: #dc3545;
+    background: #3498db;
     color: white;
     border: none;
     border-radius: 5px;
@@ -85,7 +85,7 @@
 }
 
 .change-password-btn:hover {
-    background: #c82333;
+    background: #2980b9;
 }
 
 /* Avatar & Password Popups */
@@ -163,4 +163,19 @@
     display: block;
     margin-bottom: 5px;
     text-align: left;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 10px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
 }
