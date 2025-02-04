@@ -1,3 +1,6 @@
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+
 import "../assets/css/Cart.css";
 import api from "../services/api";
 import AlertMessage from "../utils/AlertMessage";
@@ -135,7 +138,8 @@ export const Cart = () => {
     const applyDiscount = () => {
         api.post(`/discounts/apply`, {
             code: discountCode,
-            price: totalPrice
+            price: totalPrice,
+            customerId: customerId
         }, { headers: { Authorization: `Bearer ${token}` } })
             .then(response => {
                 setDiscountPrice(response.data.discountPrice);
@@ -152,28 +156,38 @@ export const Cart = () => {
 
         const isPaid = false
 
-        if(method !== "cash") {
-            
+        if (method !== "cash") {
+
             // xử lý trong trường hợp thanh toán online, sau đó cập nhật isPaid nếu thành công
-            showAlert("xử lý thanh toán online (chưa code)", "warning")
+            return showAlert("xử lý thanh toán online (chưa code)", "warning")
         }
 
-        console.log("totalQuantity:" + totalQuantity)
-        console.log("totalPrice:" + totalPrice)
-        console.log("method:" + method)
-        console.log("isPaid:" + isPaid)
-        console.log("discountCode:" + discountCode)
-        console.log("discountPrice:" + discountPrice)
-        console.log("paymentPrice:" + paymentPrice)
+        api.post(`/orders/add/${customerId}`, {
+            totalQuantity: totalQuantity,
+            totalPrice: totalPrice,
+            method: method,
+            isPaid: isPaid,
+            discountCode: discountCode,
+            discountPrice: discountPrice
 
-        // thực hiện gọi api đặt hàng ở đây
+        }, { headers: { Authorization: `Bearer ${token}` } })
+            .then(response => {
+                if (response.data.code === 0) {
+                    closeModalOrder()
+                    navigate("/shop", {
+                        replace: true,
+                        state: { alertMessage: "Payment successfully", statusMessage: "success" }
+                    });
+                }
+                else {
+                    showAlert(response.data.message, "success");
+                }
+            })
+            .catch(error => {
+                const { message, statusMessage } = getErrorMessage(error.response);
+                showAlert(message, statusMessage);
+            });
 
-        // chuyển hướng về /shop nếu thanh toán thành công (kèm thông báo)
-        closeModalOrder()
-        navigate("/shop", { 
-            replace: true,
-            state: { alertMessage: "Chưa code thanh toán", statusMessage: "warning" }
-        });
     }
 
     const actionBodyTemplate = (rowData) => {
@@ -196,6 +210,11 @@ export const Cart = () => {
     };
 
     const handleOrderNow = () => {
+
+        if(totalPrice === 0 || totalQuantity === 0) {
+            return showAlert("Cart empty!", "info")
+        }
+
         setDiscountCode("")
         setDiscountPrice(0)
         setPaymentPrice(totalPrice)
@@ -291,7 +310,7 @@ export const Cart = () => {
                 </div>
 
                 {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
-                
+
             </Dialog>
 
             {!isModalOpenOrder && alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}

@@ -32,7 +32,7 @@ export const LoginAdmin = () => {
                 if (token) {
                     const decoded = jwtDecode(token);
                     localStorage.setItem('role', decoded.role);
-                    localStorage.setItem('customerId', decoded.manager.id);
+                    localStorage.setItem('managerId', decoded.manager.id);
                     localStorage.setItem('isLoggedIn', true);
                 }
                 localStorage.setItem('token', token);

@@ -4,10 +4,13 @@ import '../assets/css/ProductDetails.css'
 import AlertMessage from "../utils/AlertMessage"
 import api from "../services/api";
 import { getErrorMessage } from '../utils/ErrorHandler';
+import ProductReviews from "../components/ProductReviews";
 
 const ProductDetailModal = ({ visible, productId, onClose }) => {
     const [productDetails, setProductDetails] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [alert, setAlert] = useState(null);
 
@@ -31,7 +34,16 @@ const ProductDetailModal = ({ visible, productId, onClose }) => {
                     showAlert(message, statusMessage);
                 });
         }
+
     }, [productId, visible]);
+
+    const handleReviewClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     return (
         <Dialog
@@ -52,7 +64,12 @@ const ProductDetailModal = ({ visible, productId, onClose }) => {
                             <img src={productDetails.url_image} alt={productDetails.name} />
                             <p className="product-brand">{productDetails.brand}</p>
                             <p className="product-price">{productDetails.retail_price.toLocaleString()} VND</p>
-
+                            <button className="review-button" onClick={(e) => {
+                                e.stopPropagation();
+                                handleReviewClick();
+                            }}>
+                                View Review
+                            </button>
                         </div>
 
                         <div className="product-details-info">
@@ -81,6 +98,12 @@ const ProductDetailModal = ({ visible, productId, onClose }) => {
                             </div>
                         </div>
                     </div>
+
+                    <ProductReviews
+                        visible={isModalOpen}
+                        productId={productId}
+                        onClose={closeModal}
+                    />
 
                 </div>
             ) : (

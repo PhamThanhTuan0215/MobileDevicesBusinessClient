@@ -1,6 +1,3 @@
-import 'primereact/resources/themes/lara-light-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
-
 import { Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Home } from "./pages/Home";
