@@ -60,6 +60,7 @@ export const Login = () => {
             });
     
             if (response.status === 201) {
+                setLoading(false);
                 showAlert("Register successfully! Please login.", "success");
                 setAction("Login");
             }
@@ -77,6 +78,7 @@ export const Login = () => {
             const response = await api.post('customers/forgotPassword', { email });
     
             if (response.status === 200) {
+                setLoading(false);
                 showAlert("The password reset request has been sent! Please check your email.", "success");
                 setAction("Login");
             }
