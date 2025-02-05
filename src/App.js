@@ -14,6 +14,8 @@ import { TestPage } from "./pages/TestPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import Popup from "./components/PopupBanner/Popup";
+
 
 function App() {
 
@@ -38,6 +40,7 @@ function App() {
 
   return (
     <>
+      <Popup />
       <Header />
 
       <Routes>
