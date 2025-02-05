@@ -1,11 +1,19 @@
-.product-reviews {
+/* Container chứa cả danh sách reviews và form nhập review */
+.product-reviews-container {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
     margin-top: 1rem;
+}
+
+/* Phần hiển thị danh sách reviews (bên trái) */
+.product-reviews {
+    flex: 1;
     max-height: 400px;
     overflow-y: auto;
     padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .review-item {
@@ -22,6 +30,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     margin-bottom: 0.5rem;
 }
 
@@ -50,7 +59,7 @@
 
 .review-item .review-header {
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     gap: 10px;
 }
 
@@ -89,8 +98,10 @@
     color: #d3d3d3;
 }
 
+/* Phần nhập review (bên phải) */
 .add-review-section {
-    margin-top: 1.5rem;
+    flex: 1;
+    max-width: 400px;
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
