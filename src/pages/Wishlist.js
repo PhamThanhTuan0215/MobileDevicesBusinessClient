@@ -4,6 +4,7 @@ import AlertMessage from "../utils/AlertMessage"
 import ProductDetails from "../components/ProductDetails";
 import React, { useState, useEffect } from "react";
 import { getErrorMessage } from '../utils/ErrorHandler';
+import { FaTrash, FaCartPlus } from 'react-icons/fa';
 
 // Component hiển thị sản phẩm
 const ProductCard = ({ product, onAddToCart, onRemoveFromWishlist, onClick }) => (
@@ -16,13 +17,13 @@ const ProductCard = ({ product, onAddToCart, onRemoveFromWishlist, onClick }) =>
             e.stopPropagation();
             onRemoveFromWishlist(product._id);
         }}>
-            Remove from Wishlist
+            <FaTrash/>
         </button>
         <button className="add-to-cart-button" onClick={(e) => {
             e.stopPropagation();
             onAddToCart(product._id);
         }}>
-            Add to Cart
+            <FaCartPlus/>
         </button>
     </div>
 );

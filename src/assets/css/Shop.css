@@ -159,20 +159,12 @@
     background-color: #148f99;
 }
 
-.wishlist-add {
-    background-color: #68b365;
+.toggle-wishlist-button {
+    background-color: wheat;
 }
 
-.wishlist-add:hover {
-    background-color: #41903e;
-}
-
-.wishlist-remove {
-    background-color: #e98f8f;
-}
-
-.wishlist-remove:hover {
-    background-color: #e94848;
+.toggle-wishlist-button:hover {
+    background-color: rgb(238, 206, 145);
 }
 
 .add-to-cart-button:active, .toggle-wishlist-button:active {

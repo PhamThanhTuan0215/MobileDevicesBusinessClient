@@ -6,6 +6,7 @@ import ProductDetails from "../components/ProductDetails";
 import AlertMessage from "../utils/AlertMessage"
 import { getErrorMessage } from "../utils/ErrorHandler";
 import { useLocation } from 'react-router-dom';
+import { FaHeart, FaCartPlus } from 'react-icons/fa';
 
 // Component tìm kiếm
 const SearchBox = ({ searchTerm, setSearchTerm }) => (
@@ -52,19 +53,19 @@ const ProductCard = ({ product, wishlist, onAddToCart, onWishlistToggle, onClick
         <p className="product-brand">{product.brand}</p>
         <p className="product-price">{product.retail_price.toLocaleString()} VND</p>
         <button
-            className={`toggle-wishlist-button ${wishlist.includes(product._id) ? "wishlist-remove" : "wishlist-add"}`}
+            className={`toggle-wishlist-button`}
             onClick={(e) => {
                 e.stopPropagation();
                 onWishlistToggle(product._id);
             }}
         >
-            {wishlist.includes(product._id) ? "Remove from Wishlist" : "Add to Wishlist"}
+            <FaHeart color={wishlist.includes(product._id) ? "red" : "gray"} />
         </button>
         <button className="add-to-cart-button" onClick={(e) => {
             e.stopPropagation();
             onAddToCart(product._id);
         }}>
-            Add to Cart
+            <FaCartPlus/>
         </button>
     </div>
 );

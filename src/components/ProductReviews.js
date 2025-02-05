@@ -55,19 +55,19 @@ const ProductReviewModal = ({ productId }) => {
         if (productId) {
             setLoading(true);
             api.get(`/reviews/${productId}`)
-            .then(response => {
-                const reviewItems = response.data.data;
-            
-                setReviews(reviewItems);
-                setTotalReviews(reviewItems.length);
-            
-                // Tính rating trung bình
-                const totalRating = reviewItems.reduce((sum, review) => sum + review.rating, 0);
-                const averageRating = reviewItems.length > 0 ? totalRating / reviewItems.length : 0;
-                setRatingAvg(averageRating);
-            
-                setLoading(false);
-            })
+                .then(response => {
+                    const reviewItems = response.data.data;
+
+                    setReviews(reviewItems);
+                    setTotalReviews(reviewItems.length);
+
+                    // Tính rating trung bình
+                    const totalRating = reviewItems.reduce((sum, review) => sum + review.rating, 0);
+                    const averageRating = reviewItems.length > 0 ? totalRating / reviewItems.length : 0;
+                    setRatingAvg(averageRating);
+
+                    setLoading(false);
+                })
                 .catch(error => {
                     setLoading(false);
                     const { message, statusMessage } = getErrorMessage(error.response);
@@ -173,7 +173,7 @@ const ProductReviewModal = ({ productId }) => {
                     </div>
 
                     <div className="product-reviews-container">
-                        {/* Hiển thị danh sách reviews nếu có */}
+
                         {reviews.length > 0 ? (
                             <div className="product-reviews">
                                 {reviews.map(review => (
@@ -195,8 +195,7 @@ const ProductReviewModal = ({ productId }) => {
                             <p>No reviews available for this product.</p>
                         )}
 
-                        {/* Luôn hiển thị phần nhập đánh giá */}
-                        <div className="add-review-section">
+                        {role === "customer" && <div className="add-review-section">
                             <h4>Add a Review</h4>
                             <Rating
                                 value={rating}
@@ -212,7 +211,7 @@ const ProductReviewModal = ({ productId }) => {
                                 className="review-textarea"
                             />
                             <Button label="Submit" icon="pi pi-send" onClick={handleAddReview} className="submit-button" />
-                        </div>
+                        </div>}
                     </div>
                 </div>
             )}

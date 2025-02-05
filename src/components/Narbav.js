@@ -27,9 +27,18 @@ export const Navbar = () => {
                 </NavLink>
             )}
 
-            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-products">Manage Products</NavLink>}
+            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-products">Products</NavLink>}
 
-            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-orders">Manage Orders</NavLink>}
+            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-orders">Orders</NavLink>}
+
+            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-accounts">Accounts</NavLink>}
+
+            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/report-products">Report Products</NavLink>}
+
+            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/report-orders">Report Orders</NavLink>}
+
+            {isLoggedIn && (role === "admin") && <NavLink to="/manage-discounts">Discounts</NavLink>}
+
 
             {
                 isLoggedIn === true ? (
