@@ -156,11 +156,11 @@ export const Cart = () => {
 
         const isPaid = false
 
-        if (method !== "cash") {
+        // if (method !== "cash") {
 
-            // xử lý trong trường hợp thanh toán online, sau đó cập nhật isPaid nếu thành công
-            return showAlert("xử lý thanh toán online (chưa code)", "warning")
-        }
+        //     // xử lý trong trường hợp thanh toán online, sau đó cập nhật isPaid nếu thành công
+        //     return showAlert("xử lý thanh toán online (chưa code)", "warning")
+        // }
 
         api.post(`/orders/add/${customerId}`, {
             totalQuantity: totalQuantity,
@@ -173,11 +173,38 @@ export const Cart = () => {
         }, { headers: { Authorization: `Bearer ${token}` } })
             .then(response => {
                 if (response.data.code === 0) {
-                    closeModalOrder()
-                    navigate("/shop", {
-                        replace: true,
-                        state: { alertMessage: "Payment successfully", statusMessage: "success" }
-                    });
+                    const orderId = response.data.data._id
+                    if(method !== "cash") {
+                        const payload = {
+                            orderId: orderId,
+                            amount: totalPrice, // VNPay yêu cầu số nguyên
+                            bankCode: "VNBANK",
+                            language: "en"
+                        };
+
+                        api.post(`/payments/create_payment_url`, payload, {
+                            headers: { "Content-Type": "application/json" }
+                        })
+                        .then(response => {
+                            if (response.data.url) {
+                                // Chuyển hướng người dùng đến VNPay
+                                window.location.href = response.data.url;
+                            } else {
+                                showAlert("Không thể tạo URL thanh toán", "error");
+                            }
+                        })
+                        .catch(error => {
+                            showAlert("Lỗi khi kết nối với VNPay", "error");
+                        });
+
+                    }
+                    else{
+                        closeModalOrder()
+                        navigate("/shop", {
+                            replace: true,
+                            state: { alertMessage: "Payment successfully", statusMessage: "success" }
+                        });
+                    }
                 }
                 else {
                     showAlert(response.data.message, "success");
