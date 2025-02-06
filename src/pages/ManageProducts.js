@@ -7,6 +7,8 @@ import AlertMessage from "../utils/AlertMessage";
 import React, { useState, useEffect } from "react";
 import { getErrorMessage } from '../utils/ErrorHandler';
 import ProductDetails from "../components/ProductDetails";
+import AddProduct from "../components/AddProduct";
+import EditProduct from "../components/EditProduct";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -22,8 +24,13 @@ export const ManageProducts = () => {
     const [first, setFirst] = useState(0);
     const rowsPerPage = 5;
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedProductId, setSelectedProductId] = useState(null);
+    const [isModalOpenDetails, setIsModalOpenDetails] = useState(false);
+    const [selectedProductIdDetails, setSelectedProductIdDetails] = useState(null);
+
+    const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
+    const [selectedProductIdEdit, setSelectedProductIdEdit] = useState(null);
+
+    const [isModalOpenAdd, setIsModalOpenAdd] = useState(false);
 
     const managerId = localStorage.getItem("managerId");
     const token = localStorage.getItem("token");
@@ -63,40 +70,78 @@ export const ManageProducts = () => {
     };
 
     const viewDetails = (rowData) => {
-        setSelectedProductId(rowData._id);
-        setIsModalOpen(true);
+        setSelectedProductIdDetails(rowData._id);
+        setIsModalOpenDetails(true);
     };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
+    const closeModalDetails = () => {
+        setIsModalOpenDetails(false);
     };
 
     const addProductModel = () => {
-        showAlert("Add product (chưa code)", "warning");
-        console.log("Open Model Add Product");
+        setIsModalOpenAdd(true)
+    };
+
+    const closeModalAdd = (isAdded = false, message = "", addedProduct = null) => {
+
+        if (isAdded === true) {
+            setProducts(prevProducts => {
+                const updatedProducts = [...prevProducts, addedProduct];
+                setTotalRecords(updatedProducts.length);
+                return updatedProducts;
+            });
+
+            showAlert(message, "success");
+        }
+
+        setIsModalOpenAdd(false);
     };
 
     const editProduct = (rowData) => {
-        if (!managerId || !token) {
-            return showAlert("You need to login", "warning");
+        setSelectedProductIdEdit(rowData._id);
+        setIsModalOpenEdit(true);
+    };
+
+    const closeModalEdit = (isUpdated = false, message = "", updatedProduct = null) => {
+
+        if (isUpdated === true) {
+            setProducts(prevProducts =>
+                prevProducts.map(product =>
+                    product._id === updatedProduct._id ? updatedProduct : product
+                )
+            );
+
+            showAlert(message, "success");
         }
 
-        api.get(`/products/details/${rowData._id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(response => {
-                console.log(response.data.data)
+        setIsModalOpenEdit(false);
+    };
 
-                showAlert("Edit Product (chưa code)", "warning");
+    const deleteProduct = (rowData) => {
+        if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+        if (!token) {
+            showAlert("You need to login", "warning");
+            return;
+        }
+
+        api.delete(
+            `products/delete/${rowData._id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        )
+            .then(response => {
+                setProducts(prevProducts =>
+                    prevProducts.filter(product => product._id !== rowData._id)
+                );
+
+                setTotalRecords(prev => prev - 1);
+
+                showAlert(response.data.message, "success");
             })
             .catch(error => {
                 const { message, statusMessage } = getErrorMessage(error.response);
                 showAlert(message, statusMessage);
             });
-    };
-
-    const deleteProduct = (rowData) => {
-        showAlert("Delete product (chưa code)", "warning");
     };
 
     const detailsBodyTemplate = (rowData) => {
@@ -112,10 +157,21 @@ export const ManageProducts = () => {
         );
     };
 
-    if (loading) return <div className="loading">Loading products...</div>;
-
+    if (loading) return <div className="loading-spinner"></div>;
     return (
         <div className="products">
+
+            <AddProduct
+                visible={isModalOpenAdd}
+                onClose={closeModalAdd}
+            />
+
+            <EditProduct
+                visible={isModalOpenEdit}
+                productId={selectedProductIdEdit}
+                onClose={closeModalEdit}
+            />
+
             <Button label="Add New Product" className="p-button-sm p-button-success add-button" onClick={() => addProductModel()} />;
 
             {products.length === 0 ? (
@@ -143,9 +199,9 @@ export const ManageProducts = () => {
             )}
 
             <ProductDetails
-                visible={isModalOpen}
-                productId={selectedProductId}
-                onClose={closeModal}
+                visible={isModalOpenDetails}
+                productId={selectedProductIdDetails}
+                onClose={closeModalDetails}
             />
 
             {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
