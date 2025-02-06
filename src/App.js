@@ -14,7 +14,6 @@ import { ManageDiscounts } from "./pages/ManageDiscounts";
 import { Login } from "./pages/Login";
 import { LoginAdmin } from "./pages/LoginAdmin";
 import { Profile } from "./pages/Profile";
-import { TestPage } from "./pages/TestPage";
 import { PageNotFound } from "./pages/PageNotFound";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -127,11 +126,6 @@ function App() {
         <Route
           path="/profile"
           element={<ProtectedRoute element={<Profile />} isLoggedIn={isLoggedIn} />}
-        />
-
-        <Route
-          path="/test"
-          element={<ProtectedRoute element={<TestPage />} isLoggedIn={isLoggedIn} />}
         />
 
         <Route path="*" element={<PageNotFound />} />
