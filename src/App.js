@@ -90,7 +90,7 @@ function App() {
         {/*Yêu cầu đăng nhập và role phải là "manager", "admin*/}
         <Route
           path="/manage-accounts"
-          element={<ProtectedRoute element={<ManageAccounts />} isLoggedIn={isLoggedIn} requiredRole={["admin"]} userRole={role} />}
+          element={<ProtectedRoute element={<ManageAccounts />} isLoggedIn={isLoggedIn} requiredRole={["manager", "admin"]} userRole={role} />}
         />
 
         {/*Yêu cầu đăng nhập và role phải là "manager", "admin*/}

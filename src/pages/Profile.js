@@ -7,6 +7,7 @@ import { getErrorMessage } from "../utils/ErrorHandler";
 export const Profile = () => {
 
     const customerId = localStorage.getItem("customerId");
+    const managerId = localStorage.getItem("managerId");
     const token = localStorage.getItem("token");
 
     const [user, setUser] = useState({
@@ -31,9 +32,17 @@ export const Profile = () => {
     
     useEffect(() => {
         const customerId = localStorage.getItem("customerId");
+        const managerId = localStorage.getItem("managerId");
+        let url_api = "";
+        if (!customerId){
+            url_api = "/managers/" + managerId;
+        }
+        else{
+            url_api = "/customers/" + customerId;
+        }
         const fetchUserData = async () => {
             try {
-                const response = await api.get("/customers/" + customerId);
+                const response = await api.get(url_api);
                 setUser(response.data.data);
                 console.log(response.data.data);
                 setPreviewAvatar(response.data.data.url_avatar);
@@ -46,8 +55,16 @@ export const Profile = () => {
     }, []);
 
     const handleUpdateProfile = async () => {
+        let url_api = "";
+        if (!customerId){
+            url_api = "/managers/" + managerId;
+        }
+        else{
+            url_api = "/customers/" + customerId;
+        }
+
         try {
-            await api.patch("/customers/" + customerId, user,
+            await api.patch(url_api, user,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setAlert({ type: "success", message: "Profile updated successfully!" });
@@ -58,8 +75,16 @@ export const Profile = () => {
     };
 
     const handleChangePassword = async () => {
+        let url_api = "";
+        if (!customerId){
+            url_api = "/managers/changePassword/" + managerId;
+        }
+        else{
+            url_api = "/customers/changePassword/" + customerId;
+        }
+
         try {
-            await api.patch("/customers/changePassword/" + customerId, { oldPassword, newPassword });
+            await api.patch(url_api, { oldPassword, newPassword });
             setAlert({ type: "success", message: "Password changed successfully!" });
             setShowPasswordPopup(false);
             setNewPassword("")

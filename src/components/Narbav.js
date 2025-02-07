@@ -31,7 +31,7 @@ export const Navbar = () => {
 
             {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-orders">Orders</NavLink>}
 
-            {isLoggedIn && (role === "admin") && <NavLink to="/manage-accounts">Accounts</NavLink>}
+            {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/manage-accounts">Accounts</NavLink>}
 
             {isLoggedIn && (role === "manager" || role === "admin") && <NavLink to="/report-products">Report Products</NavLink>}
 
