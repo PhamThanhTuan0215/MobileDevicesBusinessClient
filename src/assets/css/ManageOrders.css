@@ -1,18 +1,12 @@
-.products {
+.orders {
     padding: 20px;
     background: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 50px;
-    width: 80%;
-    margin: 20px auto;
+    width: 100%;
+    margin: 0px auto;
     margin-bottom: 50px;
-}
-
-.products h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
 }
 
 .loading {
@@ -95,11 +89,6 @@ img {
     gap: 8px;
 }
 
-.add-button {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
 .loading-spinner {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #3498db;
@@ -118,4 +107,46 @@ img {
 
 .custom-datatable {
     margin-top: 50px;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
+}
+
+.status-processing { color: #ff9800; }
+.status-delivering { color: #2196f3; }
+.status-delivered { color: #4caf50; }
+.status-canceled { color: #f44336; }
+
+.paid { color: #4caf50; }
+.unpaid { color: #f44336; }
+
+.completed { color: #4caf50; }
+.pending { color: #ff9800; }
+
+.filter-container {
+    margin-top: 2px;
+}
+
+.order-status-text {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.order-status-text.canceled {
+    color: red;
+}
+
+.order-status-text.completed {
+    color: green;
+}
+
+.p-fluid .p-field {
+    margin-bottom: 10px;
 }

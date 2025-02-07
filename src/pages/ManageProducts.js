@@ -182,8 +182,19 @@ export const ManageProducts = () => {
                         <Column field="name" header="Product Name" sortable />
                         <Column body={imageBodyTemplate} header="Image" />
                         <Column field="brand" header="Brand" sortable />
-                        <Column field="import_price" header="Import Price" sortable />
-                        <Column field="retail_price" header="Retail Price" sortable />
+                        <Column
+                            field="import_price"
+                            header="Import Price (VND)"
+                            body={(rowData) => rowData.import_price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                            sortable
+                        />
+                        <Column
+                            field="retail_price"
+                            header="Retail Price (VND)"
+                            body={(rowData) => rowData.retail_price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                            sortable
+                        />
+
                         <Column field="amount" header="Stock" sortable />
                         <Column body={detailsBodyTemplate} header="Details" />
                         <Column body={actionBodyTemplate} header="Action" />
