@@ -28,7 +28,6 @@ const EditAccountCustomerModel = ({ visible, accountId, onClose }) => {
                     setLoading(false);
                 })
                 .catch(error => {
-                    console.log("customer error")
                     setLoading(false);
                     const { message, statusMessage } = getErrorMessage(error.response);
                     showAlert(message, statusMessage);

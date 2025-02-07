@@ -20,7 +20,7 @@ export const Profile = () => {
     
     const [previewAvatar, setPreviewAvatar] = useState(user.url_avatar);
     const [showPasswordPopup, setShowPasswordPopup] = useState(false);
-    const [showAvatarPopup, setShowAvatarPopup] = useState(false);
+    // const [showAvatarPopup, setShowAvatarPopup] = useState(false);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [alert, setAlert] = useState(null);
@@ -95,24 +95,24 @@ export const Profile = () => {
         }
     };
 
-    const handleAvatarChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    // const handleAvatarChange = async (e) => {
+    //     const file = e.target.files[0];
+    //     if (!file) return;
         
-        const formData = new FormData();
-        formData.append("avatar", file);
+    //     const formData = new FormData();
+    //     formData.append("avatar", file);
         
-        try {
-            const response = await api.post("/user/upload-avatar", formData);
-            setUser({ ...user, avatar: response.data.avatar });
-            setPreviewAvatar(response.data.avatar);
-            setAlert({ type: "success", message: "Avatar updated successfully!" });
-            setShowAvatarPopup(false);
-        } catch (error) {
-            const { message, statusMessage } = getErrorMessage(error.response);
-            showAlert(message, statusMessage);
-        }
-    };
+    //     try {
+    //         const response = await api.post("/user/upload-avatar", formData);
+    //         setUser({ ...user, avatar: response.data.avatar });
+    //         setPreviewAvatar(response.data.avatar);
+    //         setAlert({ type: "success", message: "Avatar updated successfully!" });
+    //         setShowAvatarPopup(false);
+    //     } catch (error) {
+    //         const { message, statusMessage } = getErrorMessage(error.response);
+    //         showAlert(message, statusMessage);
+    //     }
+    // };
 
     const handleLogout = () => {
         localStorage.clear();
@@ -145,7 +145,7 @@ export const Profile = () => {
                 <button className="logout-btn" onClick={handleLogout}>
                     Logout
                 </button>
-                {showAvatarPopup && (
+                {/* {showAvatarPopup && (
                     <div className="avatar-popup">
                         <div className="popup-content">
                             <h3>Update Avatar</h3>
@@ -156,7 +156,7 @@ export const Profile = () => {
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
                 {showPasswordPopup && (
                     <div className="password-popup">
                         <div className="popup-content">

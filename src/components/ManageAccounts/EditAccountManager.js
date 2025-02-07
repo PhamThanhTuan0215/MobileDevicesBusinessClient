@@ -28,7 +28,6 @@ const EditAccountManagerModel = ({ visible, accountId, onClose }) => {
                     setLoading(false);
                 })
                 .catch(error => {
-                    console.log("manager error")
                     setLoading(false);
                     const { message, statusMessage } = getErrorMessage(error.response);
                     showAlert(message, statusMessage);
