@@ -3,6 +3,7 @@ import '../assets/css/Profile.css';
 import api from "../services/api";
 import AlertMessage from "../utils/AlertMessage";
 import { getErrorMessage } from "../utils/ErrorHandler";
+import ChangePassword from "../components/ChangePassword";
 
 export const Profile = () => {
 
@@ -19,11 +20,9 @@ export const Profile = () => {
     });
     
     const [previewAvatar, setPreviewAvatar] = useState(user.url_avatar);
-    const [showPasswordPopup, setShowPasswordPopup] = useState(false);
     // const [showAvatarPopup, setShowAvatarPopup] = useState(false);
-    const [oldPassword, setOldPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
     const [alert, setAlert] = useState(null);
+    const [isModalOpenPassword, setIsModalOpenPassword] = useState(false);
 
     const showAlert = (message, type = "success") => {
         setAlert({ message, type });
@@ -44,7 +43,6 @@ export const Profile = () => {
             try {
                 const response = await api.get(url_api);
                 setUser(response.data.data);
-                console.log(response.data.data);
                 setPreviewAvatar(response.data.data.url_avatar);
             } catch (error) {
                 const { message, statusMessage } = getErrorMessage(error.response);
@@ -74,26 +72,19 @@ export const Profile = () => {
         }
     };
 
-    const handleChangePassword = async () => {
-        let url_api = "";
-        if (!customerId){
-            url_api = "/managers/changePassword/" + managerId;
-        }
-        else{
-            url_api = "/customers/changePassword/" + customerId;
+    const PasswordModel = () => {
+        setIsModalOpenPassword(true)
+    };
+
+    const closeModalPassword = (isAdded = false, message = "") => {
+
+        if (isAdded === true) {
+            showAlert(message, "success");
         }
 
-        try {
-            await api.patch(url_api, { oldPassword, newPassword });
-            setAlert({ type: "success", message: "Password changed successfully!" });
-            setShowPasswordPopup(false);
-            setNewPassword("")
-            setOldPassword("")
-        } catch (error) {
-            const { message, statusMessage } = getErrorMessage(error.response);
-            showAlert(message, statusMessage);
-        }
+        setIsModalOpenPassword(false);
     };
+
 
     // const handleAvatarChange = async (e) => {
     //     const file = e.target.files[0];
@@ -123,6 +114,10 @@ export const Profile = () => {
         <>
             {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
             <div className="profile-container">
+                <ChangePassword
+                    visible={isModalOpenPassword}
+                    onClose={closeModalPassword}
+                />
                 <h2>Profile</h2>
                 <div className="profile-avatar">
                     <img src={previewAvatar} alt="Avatar" />
@@ -139,7 +134,7 @@ export const Profile = () => {
                     <input type="text" value={user.phone} onChange={(e) => setUser({ ...user, phone: e.target.value })} />
                     <button onClick={handleUpdateProfile}>Update Information</button>
                 </div>
-                <button className="change-password-btn" onClick={() => setShowPasswordPopup(true)}>
+                <button className="change-password-btn" onClick={() => PasswordModel()}>
                     Change Password
                 </button>
                 <button className="logout-btn" onClick={handleLogout}>
@@ -157,21 +152,6 @@ export const Profile = () => {
                         </div>
                     </div>
                 )} */}
-                {showPasswordPopup && (
-                    <div className="password-popup">
-                        <div className="popup-content">
-                            <h3>Change Password</h3>
-                            <label>Old Password:</label>
-                            <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-                            <label>New password:</label>
-                            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                            <div className="popup-buttons">
-                                <button className="confirm-btn" onClick={handleChangePassword}>Confirm</button>
-                                <button className="cancel-btn" onClick={() => setShowPasswordPopup(false)}>Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </>
     );
