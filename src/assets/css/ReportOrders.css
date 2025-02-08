@@ -151,28 +151,6 @@ img {
     margin-bottom: 10px;
 }
 
-.total-stats-table table {
-    margin-top: 20px;
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.total-stats-table th,
-.total-stats-table td {
-    text-align: center;
-    padding: 8px;
-    border: 1px solid #ddd;
-}
-
-.total-stats-table th {
-    background-color: hsl(193, 73%, 50%);
-    color: white;
-}
-
-.p-fluid .p-field {
-    margin-bottom: 10px;
-}
-
 .date-dropdown, .load-btn {
     margin-left: 10px;
 }

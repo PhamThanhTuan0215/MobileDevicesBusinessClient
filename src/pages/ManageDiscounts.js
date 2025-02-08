@@ -163,7 +163,19 @@ export const ManageDiscounts = () => {
                     <DataTable value={discounts.slice(first, first + rowsPerPage)} paginator={false} responsiveLayout="scroll">
                         <Column field="code" header="Code" sortable />
                         <Column field="type" header="Type" sortable />
-                        <Column field="value" header="Value" sortable />
+                        <Column
+                            field="value"
+                            header="Value"
+                            sortable
+                            body={(rowData) => {
+                                if (rowData.type === "percentage") {
+                                    return `${rowData.value}%`;
+                                } else if (rowData.type === "fixed") {
+                                    return rowData.value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+                                }
+                                return rowData.value;
+                            }}
+                        />
                         <Column field="start_date" header="Start date" sortable />
                         <Column field="end_date" header="End_date" sortable />
                         <Column body={actionBodyTemplate} header="Action" />

@@ -53,10 +53,12 @@ export const ManageOrders = () => {
 
     const [searchCustomerTerm, setSearchCustomerTerm] = useState("");
     const [searchOrderIdTerm, setSearchOrderIdTerm] = useState("");
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedStartDate, setSelectedStartDate] = useState(null);
+    const [selectedEndDate, setSelectedEndDate] = useState(null);
+    const [quickDateOption, setQuickDateOption] = useState("thisMonth");
 
     const [isModalOpenDetails, setIsModalOpenDetails] = useState(false);
-    const [selectedPOrderIdDetails, setSelectedOrderIdDetails] = useState(null);
+    const [selectedOrderIdDetails, setSelectedOrderIdDetails] = useState(null);
 
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -74,13 +76,30 @@ export const ManageOrders = () => {
         setTimeout(() => setAlert(null), 3000);
     };
 
+    const formatDate = (date) => {
+        if (!date) return "";
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
     useEffect(() => {
         if (!managerId || !token) {
             return showAlert("You need to login", "warning");
         }
 
+        const today = new Date();
+        const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        setSelectedStartDate(startDate);
+        setSelectedEndDate(endDate);
+
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+
         setLoading(true);
-        api.get(`/orders`, {
+        api.get(`/orders?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
@@ -106,16 +125,8 @@ export const ManageOrders = () => {
             filtered = filtered.filter(o => o._id.toLowerCase().includes(searchOrderIdTerm.toLowerCase()));
         }
 
-        if (selectedDate) {
-            const selectedTimestamp = new Date(selectedDate).setHours(0, 0, 0, 0);
-            filtered = filtered.filter(o => {
-                const orderDate = new Date(o.creation_date).setHours(0, 0, 0, 0);
-                return orderDate === selectedTimestamp;
-            });
-        }
-
         setFilteredOrders(filtered);
-    }, [searchCustomerTerm, searchOrderIdTerm, selectedDate, orders]);
+    }, [searchCustomerTerm, searchOrderIdTerm, orders]);
 
     const onPageChange = (event) => {
         setFirst(event.first);
@@ -235,6 +246,81 @@ export const ManageOrders = () => {
             });
     };
 
+    const handleQuickDateChange = (option) => {
+        setQuickDateOption(option)
+
+        const today = new Date();
+        let startDate = null;
+        let endDate = null;
+
+        switch (option) {
+            case "today":
+                startDate = new Date(today);
+                endDate = new Date(today);
+                break;
+            case "yesterday":
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 1);
+                endDate = new Date(startDate);
+                break;
+            case "thisMonth":
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                break;
+            case "thisYear":
+                startDate = new Date(today.getFullYear(), 0, 1);
+                endDate = new Date(today.getFullYear(), 11, 31);
+                break;
+            case "all":
+                startDate = null;
+                endDate = null;
+                break;
+            default:
+                return;
+        }
+
+        setSelectedStartDate(startDate);
+        setSelectedEndDate(endDate);
+    };
+
+    const handleLoadData = () => {
+
+        if (!selectedStartDate && selectedEndDate) {
+            showAlert("Please select start dates!", "warning");
+            return;
+        }
+
+        if (selectedStartDate && !selectedEndDate) {
+            showAlert("Please select end dates!", "warning");
+            return;
+        }
+
+        if (!managerId || !token) {
+            return showAlert("You need to login", "warning");
+        }
+
+        const formattedStartDate = formatDate(selectedStartDate);
+        const formattedEndDate = formatDate(selectedEndDate);
+
+        setSearchCustomerTerm("")
+        setSearchOrderIdTerm("")
+        setLoading(true);
+        
+        api.get(`/orders?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => {
+                setOrders(response.data.data);
+                setTotalRecords(response.data.data.length);
+                setLoading(false);
+            })
+            .catch(error => {
+                setLoading(false);
+                const { message, statusMessage } = getErrorMessage(error.response);
+                showAlert(message, statusMessage);
+            });
+    };
+
     const detailsBodyTemplate = (rowData) => {
         return <Button label="View" className="p-button-sm p-button-info" onClick={() => viewDetails(rowData)} />;
     };
@@ -272,17 +358,50 @@ export const ManageOrders = () => {
     return (
         <>
             <div className="filter-container">
-                <SearchCustomerBox searchCustomerTerm={searchCustomerTerm} setSearchCustomerTerm={setSearchCustomerTerm} />
                 <SearchOrderIdBox searchOrderIdTerm={searchOrderIdTerm} setSearchOrderIdTerm={setSearchOrderIdTerm} />
+                <SearchCustomerBox searchCustomerTerm={searchCustomerTerm} setSearchCustomerTerm={setSearchCustomerTerm} />
 
                 <div className="date-filter">
-                    <Calendar
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.value)}
-                        placeholder="Select date"
-                        showIcon
-                        dateFormat="dd/mm/yy"
-                    />
+                    <div className="calendar-row">
+                        <Calendar
+                            value={selectedStartDate}
+                            onChange={(e) => setSelectedStartDate(e.value)}
+                            placeholder="Select start date"
+                            showIcon
+                            dateFormat="dd/mm/yy"
+                        />
+
+                        <Dropdown
+                            value={quickDateOption}
+                            options={[
+                                { label: "Today", value: "today" },
+                                { label: "Yesterday", value: "yesterday" },
+                                { label: "This Month", value: "thisMonth" },
+                                { label: "This Year", value: "thisYear" },
+                                { label: "All", value: "all" }
+                            ]}
+                            onChange={(e) => handleQuickDateChange(e.value)}
+                            placeholder="Quick Select"
+                            className="p-dropdown-sm date-dropdown"
+                        />
+                    </div>
+
+                    <div className="calendar-row">
+                        <Calendar
+                            value={selectedEndDate}
+                            onChange={(e) => setSelectedEndDate(e.value)}
+                            placeholder="Select end date"
+                            showIcon
+                            dateFormat="dd/mm/yy"
+                        />
+
+                        <Button
+                            label="Load Data"
+                            className="p-button-primary p-button-sm load-btn"
+                            onClick={handleLoadData}
+                        />
+                    </div>
+
                 </div>
             </div>
 
@@ -294,7 +413,7 @@ export const ManageOrders = () => {
                     <>
                         <DataTable value={filteredOrders.slice(first, first + rowsPerPage)} paginator={false} responsiveLayout="scroll">
                             <Column body={actionBodyTemplate} header="Action" />
-                            <Column field="_id" header="Order Code" sortable />
+                            <Column field="_id" header="Order Code" />
                             <Column field="customerName" header="Customer" sortable />
                             <Column field="totalQuantity" header="Total Quantity" sortable />
                             <Column
@@ -338,7 +457,6 @@ export const ManageOrders = () => {
                             <Column
                                 field="customerAddress"
                                 header="Address"
-                                sortable
                                 style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                                 body={(rowData) => (
                                     <>
@@ -353,13 +471,11 @@ export const ManageOrders = () => {
                                 field="discountCode"
                                 header="Discount Code"
                                 body={(rowData) => rowData.discountCode ? rowData.discountCode : "-"}
-                                sortable
                             />
                             <Column
                                 field="discountPrice"
                                 header="Discount Price"
                                 body={(rowData) => rowData.discountPrice > 0 ? rowData.discountPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) : "-"}
-                                sortable
                             />
                             <Column field="creation_date" header="Creation Date" body={(rowData) => new Date(rowData.creation_date).toLocaleString()} sortable />
                             <Column
@@ -370,7 +486,6 @@ export const ManageOrders = () => {
                             />
 
                         </DataTable>
-
 
                         <Paginator
                             first={first}
@@ -430,7 +545,7 @@ export const ManageOrders = () => {
 
                 <OrderDetails
                     visible={isModalOpenDetails}
-                    orderId={selectedPOrderIdDetails}
+                    orderId={selectedOrderIdDetails}
                     onClose={closeModalDetails}
                 />
 

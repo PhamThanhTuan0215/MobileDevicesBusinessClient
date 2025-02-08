@@ -5,7 +5,7 @@ import AlertMessage from "../utils/AlertMessage"
 import api from "../services/api";
 import { getErrorMessage } from '../utils/ErrorHandler';
 
-const OrderDetailModal = ({ visible, orderId, onClose }) => {
+const OrderDetailModal = ({ visible, orderId, onClose, isStats = false }) => {
     const [orderDetails, setOrderDetails] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -27,7 +27,12 @@ const OrderDetailModal = ({ visible, orderId, onClose }) => {
 
         if (orderId) {
             setLoading(true);
-            api.get(`orders/details/${orderId}`, {
+            let path = `orders/details/${orderId}`
+            if (isStats === true) {
+                path = `reports/orders/details/${orderId}`
+            }
+
+            api.get(path, {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
@@ -42,7 +47,7 @@ const OrderDetailModal = ({ visible, orderId, onClose }) => {
                 });
         }
 
-    }, [orderId, visible]);
+    }, [isStats, orderId, visible]);
 
     return (
         <Dialog
@@ -60,9 +65,23 @@ const OrderDetailModal = ({ visible, orderId, onClose }) => {
                         <tr>
                             <th>Image</th>
                             <th>Product Name</th>
+                            {isStats && (
+                                <>
+                                    <th>Import Price</th>
+                                    <th>Total Import Price</th>
+                                </>
+                            )}
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total Price</th>
+                            {isStats && (
+                                <>
+                                    <th>
+                                        Profit <br />
+                                        <small style={{ color: "red", fontSize: "12px" }}><i>(Discount not included)</i></small>
+                                    </th>
+                                </>
+                            )}
                         </tr>
                     </thead>
                     <tbody>
@@ -76,13 +95,25 @@ const OrderDetailModal = ({ visible, orderId, onClose }) => {
                                     />
                                 </td>
                                 <td>{detail.productName}</td>
+                                {isStats && (
+                                    <>
+                                        <td>{detail.importPrice.toLocaleString()} VND</td>
+                                        <td>{detail.totalImportPrice.toLocaleString()} VND</td>
+                                    </>
+                                )}
                                 <td>{detail.price.toLocaleString()} VND</td>
                                 <td>{detail.quantity}</td>
                                 <td>{detail.totalPrice.toLocaleString()} VND</td>
+                                {isStats && (
+                                    <>
+                                        <td style={{ color: "#28a745", fontWeight: "bold" }}>{detail.profit.toLocaleString()} VND</td>
+                                    </>
+                                )}
                             </tr>
                         ))}
                     </tbody>
                 </table>
+
             ) : (
                 <p>No details available for this order.</p>
             )}
