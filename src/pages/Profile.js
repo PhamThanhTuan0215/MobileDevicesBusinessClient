@@ -53,6 +53,14 @@ export const Profile = () => {
     }, []);
 
     const handleUpdateProfile = async () => {
+
+        const { name, phone, address, email, url_avatar } = user;
+
+        if (!name || !phone || !address || !email || !url_avatar) {
+            showAlert("Please fill in all fields!", "warning");
+            return; 
+        }
+
         let url_api = "";
         if (!customerId){
             url_api = "/managers/" + managerId;
