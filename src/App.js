@@ -22,7 +22,6 @@ import Popup from "./components/PopupBanner/Popup";
 
 
 function App() {
-  console.log("Connect to server: ", process.env.REACT_APP_API_BASE_URL)
 
   // State quản lý đăng nhập
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
