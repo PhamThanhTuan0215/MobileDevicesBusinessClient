@@ -74,7 +74,7 @@ export const ReportProducts = () => {
         return `${year}-${month}-${day}`;
     };
 
-    const chartData = {
+    const chartDataQuantitySold = {
         labels: filteredProducts.map((product) => product.name),
         datasets: [
             {
@@ -88,7 +88,38 @@ export const ReportProducts = () => {
         ]
     };
 
-    const chartOptions = {
+    const chartDataProfit = {
+        labels: filteredProducts.map((product) => product.name),
+        datasets: [
+            {
+                label: 'Profit (VND)',
+                data: filteredProducts.map((product) => product.profit),
+                backgroundColor: '#46e043',
+                borderColor: '#1E88E5',
+                borderWidth: 1,
+                barThickness: 40
+            }
+        ]
+    };
+
+    const chartOptionsProfit = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                ticks: {
+                    // stepSize: 100000,
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    const chartOptionsQuantitySold = {
         responsive: true,
         plugins: {
             legend: {
@@ -414,10 +445,14 @@ export const ReportProducts = () => {
                         />
 
                         <div className="chart-container">
-                            <h3>Product Sales Chart</h3>
-                            <Bar data={chartData} options={chartOptions} />
+                            <Bar data={chartDataQuantitySold} options={chartOptionsQuantitySold} />
+                            <h3>Product Sales Quantity Sold Chart</h3>
                         </div>
 
+                        <div className="chart-container">
+                            <Bar data={chartDataProfit} options={chartOptionsProfit} />
+                            <h3>Product Sales Profit Chart</h3>
+                        </div>
                     </>
                 )}
 

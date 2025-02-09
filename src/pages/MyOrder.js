@@ -89,7 +89,7 @@ export const MyOrder = () => {
                             <th>Method</th>
                             <th>Paid</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
