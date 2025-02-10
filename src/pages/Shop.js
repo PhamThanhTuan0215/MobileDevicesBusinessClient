@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../services/api";
 import '../assets/css/Shop.css';
 import { FaSearch } from "react-icons/fa";
@@ -8,18 +8,38 @@ import { getErrorMessage } from "../utils/ErrorHandler";
 import { useLocation } from 'react-router-dom';
 import { FaHeart, FaCartPlus } from 'react-icons/fa';
 
+import { Paginator } from 'primereact/paginator';
+
 // Component tìm kiếm
-const SearchBox = ({ searchTerm, setSearchTerm }) => (
-    <div className="search-box">
-        <FaSearch className="search-icon" />
-        <input
-            type="text"
-            placeholder="Search product..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-        />
-    </div>
-);
+const SearchBox = ({ searchTerm, setSearchTerm }) => {
+    const inputRef = useRef(null);
+    const [tempSearch, setTempSearch] = useState(searchTerm);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            setSearchTerm(tempSearch);
+        }, 500);
+
+        return () => clearTimeout(delayDebounce);
+    }, [tempSearch, setSearchTerm]);
+
+    return (
+        <div className="search-box">
+            <FaSearch className="search-icon" />
+            <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search product..."
+                value={tempSearch}
+                onChange={(e) => setTempSearch(e.target.value)}
+            />
+        </div>
+    );
+};
 
 // Component lọc theo thương hiệu
 const BrandFilter = ({ brands, selectedBrand, setSelectedBrand }) => (
@@ -65,7 +85,7 @@ const ProductCard = ({ product, wishlist, onAddToCart, onWishlistToggle, onClick
             e.stopPropagation();
             onAddToCart(product._id);
         }}>
-            <FaCartPlus/>
+            <FaCartPlus />
         </button>
     </div>
 );
@@ -77,13 +97,17 @@ export const Shop = () => {
     const alertMessageStatus = location.state?.statusMessage;
 
     const [products, setProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
     const [brands, setBrands] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedSort, setSelectedSort] = useState("none");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
+
+    const [page, setPage] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [first, setFirst] = useState(0);
+    const rowsPerPage = 10;
 
     const [wishlist, setWishlist] = useState([]);
 
@@ -98,13 +122,14 @@ export const Shop = () => {
 
     useEffect(() => {
 
-        if(alertMessage) {
+        if (alertMessage) {
             showAlert(alertMessage, alertMessageStatus)
         }
 
         const customerId = localStorage.getItem("customerId");
         const token = localStorage.getItem("token");
 
+        // favorite products
         if (!customerId || !token) {
             setWishlist([]);
         }
@@ -120,16 +145,25 @@ export const Shop = () => {
                 });
         }
 
-        api.get("/products/display")
+        // brands
+        api.get("/products/brands")
+            .then(response => {
+                const brandsList = response.data.data || [];
+                setBrands(brandsList);
+            })
+            .catch(error => {
+                const { message, statusMessage } = getErrorMessage(error.response);
+                showAlert(message, statusMessage);
+
+                setBrands(["All"])
+            });
+
+        api.get("/products/display?page=1")
             .then(response => {
                 const result = response.data;
                 const productList = Array.isArray(result.data) ? result.data : [];
                 setProducts(productList);
-                setFilteredProducts(productList);
-
-                const uniqueBrands = [...new Set(productList.map(p => p.brand))];
-                setBrands(["All", ...uniqueBrands]);
-
+                setTotalRecords(result.totalLength);
                 setLoading(false);
             })
             .catch(error => {
@@ -142,25 +176,81 @@ export const Shop = () => {
     }, [alertMessage, alertMessageStatus]);
 
     useEffect(() => {
-        let filtered = [...products];
+
+        setLoading(true);
+
+        setPage(1)
+        setFirst(0)
+
+        const params = new URLSearchParams();
 
         if (searchTerm.trim() !== "") {
-            filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            params.append("productNameSearch", searchTerm);
+        }
+        if (selectedBrand !== "All" && selectedBrand !== "") {
+            params.append("brand", selectedBrand);
+        }
+        if (selectedSort === "asc" || selectedSort === "desc") {
+            params.append("sortPrice", selectedSort);
         }
 
-        if (selectedBrand !== "All") {
-            filtered = filtered.filter(p => p.brand === selectedBrand);
+        api.get(`/products/display?page=1&${params.toString()}`)
+            .then(response => {
+                const result = response.data;
+                const productList = Array.isArray(result.data) ? result.data : [];
+                setProducts(productList);
+                setTotalRecords(result.totalLength);
+
+                setLoading(false);
+            })
+            .catch(error => {
+                setLoading(false);
+
+                const { message, statusMessage } = getErrorMessage(error.response);
+                showAlert(message, statusMessage);
+            });
+
+    }, [searchTerm, selectedBrand, selectedSort]);
+
+    useEffect(() => {
+
+        setLoading(true);
+
+        const params = new URLSearchParams();
+
+        if (searchTerm.trim() !== "") {
+            params.append("productNameSearch", searchTerm);
+        }
+        if (selectedBrand !== "All" && selectedBrand !== "") {
+            params.append("brand", selectedBrand);
+        }
+        if (selectedSort === "asc" || selectedSort === "desc") {
+            params.append("sortPrice", selectedSort);
         }
 
-        if (selectedSort === "asc") {
-            filtered = filtered.sort((a, b) => a.retail_price - b.retail_price);
-        }
-        else if (selectedSort === "desc") {
-            filtered = filtered.sort((a, b) => b.retail_price - a.retail_price);
-        }
+        api.get(`/products/display?page=${page}&${params.toString()}`)
+            .then(response => {
+                const result = response.data;
+                const productList = Array.isArray(result.data) ? result.data : [];
+                setProducts(productList);
+                setTotalRecords(result.totalLength);
 
-        setFilteredProducts(filtered);
-    }, [searchTerm, selectedBrand, selectedSort, products]);
+                setLoading(false);
+            })
+            .catch(error => {
+                setLoading(false);
+
+                const { message, statusMessage } = getErrorMessage(error.response);
+                showAlert(message, statusMessage);
+            });
+    }, [searchTerm, selectedBrand, selectedSort, page])
+
+    const onPageChange = (event) => {
+        setFirst(event.first);
+        const page = event.first / rowsPerPage + 1;
+        setPage(page)
+    };
+
 
     const handleWishlistToggle = (productId) => {
 
@@ -246,23 +336,34 @@ export const Shop = () => {
                 </div>
 
                 <div className="product-grid">
-                    {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => (
-                            <ProductCard
-                                key={product._id}
-                                product={product}
-                                wishlist={wishlist}
-                                onAddToCart={handleAddToCart}
-                                onWishlistToggle={handleWishlistToggle}
-                                onClick={handleProductClick}
-                            />
-                        ))
+                    {products.length > 0 ? (
+                        <>
+                            {products.map((product) => (
+                                <ProductCard
+                                    key={product._id}
+                                    product={product}
+                                    wishlist={wishlist}
+                                    onAddToCart={handleAddToCart}
+                                    onWishlistToggle={handleWishlistToggle}
+                                    onClick={handleProductClick}
+                                />
+                            ))}
+
+                        </>
                     ) : (
                         <div className="no-products">
                             <p>There are no matching products.</p>
                         </div>
                     )}
                 </div>
+
+                {products.length > 0 &&
+                    <Paginator
+                        first={first}
+                        rows={rowsPerPage}
+                        totalRecords={totalRecords}
+                        onPageChange={onPageChange}
+                    />}
 
                 <ProductDetails
                     visible={isModalOpen}

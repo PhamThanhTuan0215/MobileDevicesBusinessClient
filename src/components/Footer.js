@@ -2,11 +2,14 @@ import React from 'react';
 import '../assets/css/Footer.css';
 
 const Footer = () => {
+    const email_contact_1 = process.env.REACT_APP_EMAIL_CONTACT_THANH
+    const email_contact_2 = process.env.REACT_APP_EMAIL_CONTACT_TUAN
+
     return (
         <footer className="footer">
             <div className="footer-content">
-                <p>&copy; 2025 Mobile Devices Business. All rights reserved.</p>
-                <p>Contact us at: thanhtuancr1234@gmail.com</p>
+                <p>&copy; Thanh & Tuan mobile phone store.</p>
+                <p>Contact us at: {email_contact_1} or {email_contact_2}</p>
             </div>
         </footer>
     );
